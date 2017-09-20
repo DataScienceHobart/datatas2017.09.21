@@ -1,0 +1,137 @@
+---
+title: "Shapes"
+author: "Michael Sumner"
+date: "20/09/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width=7, fig.height = 7)
+```
+
+# Shapes
+
+This is not a shapefile. 
+
+It's a `SpatialPolygonsDataFrame`, rendered in a particular way using the R programming language. 
+
+```{r}
+library(aceecostats)
+library(sp)
+plot(aes_region_simple, col = aes_region_simple$colour)
+```
+
+It can be rendered in various ways. 
+
+```{r}
+library(anglr)
+
+mesh <- anglr(aes_region_simple)
+plot(mesh)
+rgl::rglwidget()
+```
+
+```{r}
+library(anglr)
+rgl::rgl.clear()
+mesh <- anglr(aes_region_simple)
+plot(globe(mesh))
+rgl::rglwidget()
+```
+
+```{r}
+library(mapview)
+mapview(aes_region_ll, col.regions = aes_region_ll$colour) # viridis::viridis(nrow(aes_region_ll)))
+```
+
+Finally, we can nowadays actually edit or create our own drawings interactively, but this is still 
+an early stage. 
+
+```{r}
+library(mapedit)
+```
+
+# Simple shape
+
+A map of Antarctica is pretty complicated, so let's take it back a little. 
+
+```{r}
+library(silicate)
+data("minimal_mesh")
+library(sf)
+print(minimal_mesh)
+plot(minimal_mesh)
+```
+
+
+This simple situation hides a lot of problems. 
+
+## First problem
+
+It's pretty complicated. 
+
+```{r}
+str(unclass(minimal_mesh$geom))
+```
+
+## Second problem
+
+There are three shapes here, but only two values.  (One of the shapes is a hole). 
+
+```{r}
+minimal_mesh$a
+```
+## Third problem
+
+There are shared-elements between these two objects, two coordinates and one edge. But how can we know this? 
+
+```{r}
+op <- par(xpd = NA)
+plot(minimal_mesh, col = NA)
+ring1 <- minimal_mesh$geom[[1]][[1]][[1]]
+points(ring1)
+text(ring1, label = sprintf("%s,%s", ring1[, 1], ring1[, 2]), pos = 2, adj = 3, col = "dodgerblue")
+ring2 <- minimal_mesh$geom[[2]][[1]][[1]]
+points(ring2)
+text(ring2, label = sprintf("%s,%s", ring2[, 1], ring2[, 2]), pos = 4, adj = 3, col = "firebrick")
+
+par(op)
+```
+
+
+## Standard algorithms don't know about the shapes
+
+```{r}
+## maybe use the sc example instead?
+plot(minimal_mesh, col = NA, lwd = 4)
+plot(st_triangulate(minimal_mesh), add = TRUE, col = NA, border = "red")
+```
+
+
+# Raster data
+
+Why are polygons interesting? Because they are *arbitrary partitions in space* into which we can 
+summarize or record data. Raster data are interesting because they partition space into *standard* or *finite elements*, essentially small simple pieces that can be used to perform more complicated aggregate tasks. 
+
+We can summarize raster data into polygon data, it's a standard facility. 
+
+```{r}
+library(raadtools)
+sst <- readsst(as.Date("2017-09-01") + 0:17, xylim = extent(aes_region_ll))
+#saveRDS(sst, file = "ghrsst.rds")
+ex_sst <- extract(sst, aes_region_ll)
+```
+
+
+## Return to the blocky triangles in original
+
+- resize the triangles for a smoother curve
+
+- elevate with bathymetry
+
+- show the North Carolina example
+
+
+
+
+

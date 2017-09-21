@@ -104,6 +104,9 @@ text(ring1, label = sprintf("%s,%s", ring1[, 1], ring1[, 2]), pos = 2, adj = 3, 
 ring2 <- minimal_mesh$geom[[2]][[1]][[1]]
 points(ring2)
 text(ring2, label = sprintf("%s,%s", ring2[, 1], ring2[, 2]), pos = 4, adj = 3, col = "firebrick")
+ring3 <- minimal_mesh$geom[[1]][[1]][[2]]
+points(ring3)
+text(ring3, label = sprintf("%s,%s", ring3[, 1], ring3[, 2]), pos = 1, adj = 3, col = "black")
 
 par(op)
 ```
@@ -136,7 +139,11 @@ plot(st_geometry(g), add = TRUE, lwd = 4)
 
 
 
-# This is a shapefile
+# This is simple features
+
+- shapes are represented as paths so only planar polygonal shapes are possible
+- the standard allows for XY[Z[M]] geometry,but this is not extensible  - no capacity to store data against component geometry elements
+- no internal topology (no vertex-, edge-, or path-sharing).
 
 
 
